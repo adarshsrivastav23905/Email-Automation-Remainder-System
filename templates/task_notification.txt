@@ -1,0 +1,8 @@
+Subject: Task Alert: {{title}}
+Hi {{name}} ({{department}}),
+
+You have a pending task: {{title}}.
+{{details}}
+
+Thank you,
+Operations Desk

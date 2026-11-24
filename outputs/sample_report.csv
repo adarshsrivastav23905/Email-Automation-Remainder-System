@@ -1,0 +1,9 @@
+timestamp,reminder_id,name,email,subject,status,error
+2026-11-19 11:15:39,R001,Aarav Sharma,aarav.sharma@example.com,Meeting Reminder: Weekly Sales Review,DRY_RUN,
+2026-11-19 11:15:39,R002,Priya Nair,priya.nair@example.com,Meeting Reminder: Interview Panel Briefing,DRY_RUN,
+2026-11-19 11:15:39,R003,Rohan Shetty,rohan.shetty@example.com,Task Alert: Submit Monthly Ops Report,DRY_RUN,
+2026-11-19 11:15:39,R004,Meera Kamath,meera.kamath@example.com,Starting soon: Python Automation Webinar,DRY_RUN,
+2026-11-19 11:15:39,R005,Ravi Kumar,ravi.kumar-example.com,,FAILED,Invalid email address 'ravi.kumar-example.com'
+2026-11-19 11:15:39,R006,Sneha Pai,sneha.pai@example.com,Follow-up: Leave Policy Query,DRY_RUN,
+2026-11-19 11:15:39,R007,,,,FAILED,Unknown contact_id 'C999'
+2026-11-19 11:15:39,R008,Aarav Sharma,aarav.sharma@example.com,Meeting Reminder: Quarterly Planning Meeting,DRY_RUN,

@@ -1,0 +1,9 @@
+Subject: Follow-up: {{title}}
+Hi {{name}},
+
+Just following up on "{{title}}".
+{{details}}
+
+Looking forward to your reply.
+
+Admin Team

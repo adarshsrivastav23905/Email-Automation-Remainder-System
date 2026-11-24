@@ -1,0 +1,9 @@
+reminder_id,contact_id,title,template,send_at,details,repeat
+R001,C001,Weekly Sales Review,meeting_reminder.txt,2026-11-18 09:00,Google Meet - link in calendar invite,weekly
+R002,C002,Interview Panel Briefing,meeting_reminder.txt,2026-11-18 10:30,Conference Room B,none
+R003,C003,Submit Monthly Ops Report,task_notification.txt,2026-11-19 08:00,Due by 5 PM today,none
+R004,C004,Python Automation Webinar,webinar_reminder.txt,2026-11-19 09:30,Join at https://meet.example.com/python-webinar,none
+R005,C005,Invoice INV-1042 Payment Due,payment_reminder.txt,2026-11-18 11:00,Amount: INR 12500 | Due date: 25 Nov 2026,none
+R006,C006,Leave Policy Query,follow_up.txt,2026-11-19 07:45,Please share the pending form,none
+R007,C999,Ghost Reminder (unknown contact),task_notification.txt,2026-11-18 12:00,This contact does not exist,none
+R008,C001,Quarterly Planning Meeting,meeting_reminder.txt,2030-12-01 10:00,Board Room,none

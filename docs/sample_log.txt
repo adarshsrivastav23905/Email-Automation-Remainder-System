@@ -1,0 +1,28 @@
+2026-11-19 11:15:39 | INFO    | Starting in DRY-RUN (no emails will be sent) mode
+2026-11-19 11:15:39 | INFO    | Loaded 6 contacts and 8 reminders
+2026-11-19 11:15:39 | INFO    | [DRY-RUN] Would send to aarav.sharma@example.com | Subject: Meeting Reminder: Weekly Sales Review
+2026-11-19 11:15:39 | INFO    | [DRY-RUN] Would send to priya.nair@example.com | Subject: Meeting Reminder: Interview Panel Briefing
+2026-11-19 11:15:39 | INFO    | [DRY-RUN] Would send to rohan.shetty@example.com | Subject: Task Alert: Submit Monthly Ops Report
+2026-11-19 11:15:39 | INFO    | [DRY-RUN] Would send to meera.kamath@example.com | Subject: Starting soon: Python Automation Webinar
+2026-11-19 11:15:39 | ERROR   | [FAILED] R005 -> Invalid email address 'ravi.kumar-example.com'
+2026-11-19 11:15:39 | INFO    | [DRY-RUN] Would send to sneha.pai@example.com | Subject: Follow-up: Leave Policy Query
+2026-11-19 11:15:39 | ERROR   | [FAILED] R007 -> Unknown contact_id 'C999'
+2026-11-19 11:15:39 | INFO    | [DRY-RUN] Would send to aarav.sharma@example.com | Subject: Meeting Reminder: Quarterly Planning Meeting
+2026-11-19 11:15:39 | INFO    | =======================================================
+2026-11-19 11:15:39 | INFO    | SUMMARY  total=8 | sent=0 | dry_run=6 | failed=2 | still scheduled=1
+2026-11-19 11:15:39 | INFO    | =======================================================
+2026-11-19 11:15:39 | INFO    | Report saved: /home/claude/Email-Automation-Reminder-System/outputs/report_20261119_111539.csv
+2026-11-19 11:15:39 | INFO    | Starting in DRY-RUN (no emails will be sent) mode
+2026-11-19 11:15:39 | INFO    | Loaded 6 contacts and 8 reminders
+2026-11-19 11:15:39 | INFO    | [DRY-RUN] Would send to aarav.sharma@example.com | Subject: Meeting Reminder: Weekly Sales Review
+2026-11-19 11:15:39 | INFO    | [DRY-RUN] Would send to priya.nair@example.com | Subject: Meeting Reminder: Interview Panel Briefing
+2026-11-19 11:15:39 | INFO    | [DRY-RUN] Would send to rohan.shetty@example.com | Subject: Task Alert: Submit Monthly Ops Report
+2026-11-19 11:15:39 | INFO    | [DRY-RUN] Would send to meera.kamath@example.com | Subject: Starting soon: Python Automation Webinar
+2026-11-19 11:15:39 | ERROR   | [FAILED] R005 -> Invalid email address 'ravi.kumar-example.com'
+2026-11-19 11:15:39 | INFO    | [DRY-RUN] Would send to sneha.pai@example.com | Subject: Follow-up: Leave Policy Query
+2026-11-19 11:15:39 | ERROR   | [FAILED] R007 -> Unknown contact_id 'C999'
+2026-11-19 11:15:39 | INFO    | [DRY-RUN] Would send to aarav.sharma@example.com | Subject: Meeting Reminder: Quarterly Planning Meeting
+2026-11-19 11:15:39 | INFO    | =======================================================
+2026-11-19 11:15:39 | INFO    | SUMMARY  total=8 | sent=0 | dry_run=6 | failed=2 | still scheduled=1
+2026-11-19 11:15:39 | INFO    | =======================================================
+2026-11-19 11:15:39 | INFO    | Report saved: /home/claude/Email-Automation-Reminder-System/outputs/report_20261119_111539.csv

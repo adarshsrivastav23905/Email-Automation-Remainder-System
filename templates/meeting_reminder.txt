@@ -1,0 +1,11 @@
+Subject: Meeting Reminder: {{title}}
+Hi {{name}},
+
+This is a reminder for your upcoming meeting "{{title}}" scheduled on {{send_at}}.
+
+Details: {{details}}
+
+Please be on time.
+
+Regards,
+Automation Team

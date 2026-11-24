@@ -1,0 +1,8 @@
+Subject: Starting soon: {{title}}
+Hi {{name}},
+
+Your webinar "{{title}}" starts on {{send_at}}.
+{{details}}
+
+See you there!
+Training Team

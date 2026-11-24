@@ -1,3 +1,4 @@
+import altair as alt
 import pandas as pd
 import streamlit as st
 
@@ -5,6 +6,22 @@ from src.config import DATA_DIR, get_smtp_settings
 from src.data_loader import load_contacts, load_reminders
 from src.mailer import EmailSender, is_valid_email
 from src.scheduler import process_due_reminders
+
+READINESS_ORDER = [
+    "Ready",
+    "Scheduled",
+    "Invalid email",
+    "Unknown contact",
+    "Invalid date",
+]
+READINESS_COLORS = ["#0C9B83", "#3284D6", "#D94B63", "#D7831F", "#7657D6"]
+READINESS_BADGE_COLORS = {
+    "Ready": "green",
+    "Scheduled": "blue",
+    "Invalid email": "red",
+    "Unknown contact": "orange",
+    "Invalid date": "violet",
+}
 
 
 @st.cache_data
@@ -62,6 +79,9 @@ with st.sidebar:
         st.rerun()
 
 st.caption("OPERATIONS  /  EMAIL AUTOMATION")
+with st.container(horizontal=True):
+    st.badge("LOCAL CSV DATA", icon=":material/storage:", color="blue")
+    st.badge("DRY-RUN PROTECTED", icon=":material/shield:", color="green")
 st.title(
     {
         "Overview": "Reminder operations",
@@ -73,19 +93,17 @@ st.caption("A clear view of your outreach pipeline, delivery readiness, and data
 
 metric_cols = st.columns(3, gap="small")
 with metric_cols[0]:
-    st.metric("Contacts", len(contacts_df), help="Contacts available in the CSV directory", border=True)
+    st.metric("Contacts", len(contacts_df), border=True)
 with metric_cols[1]:
     st.metric(
-        "Ready now",
+        "Ready",
         int((reminders_df["readiness"] == "Ready").sum()),
-        help="Due reminders with a valid contact and email address",
         border=True,
     )
 with metric_cols[2]:
     st.metric(
         "Scheduled",
         int((reminders_df["readiness"] == "Scheduled").sum()),
-        help="Reminders with a future send time",
         border=True,
     )
 
@@ -101,7 +119,44 @@ if page == "Overview":
                 .rename_axis("Readiness")
                 .reset_index(name="Reminders")
             )
-            st.bar_chart(readiness_counts, x="Readiness", y="Reminders")
+            max_count = max(1, int(readiness_counts["Reminders"].max()))
+            bars = (
+                alt.Chart(readiness_counts)
+                .mark_bar(cornerRadiusEnd=6, size=26)
+                .encode(
+                    x=alt.X(
+                        "Reminders:Q",
+                        title="Reminders",
+                        scale=alt.Scale(domain=[0, max_count + 1]),
+                        axis=alt.Axis(format="d", tickMinStep=1),
+                    ),
+                    y=alt.Y(
+                        "Readiness:N",
+                        title=None,
+                        sort=READINESS_ORDER,
+                        axis=alt.Axis(labelLimit=150),
+                    ),
+                    color=alt.Color(
+                        "Readiness:N",
+                        scale=alt.Scale(
+                            domain=READINESS_ORDER,
+                            range=READINESS_COLORS,
+                        ),
+                        legend=None,
+                    ),
+                    tooltip=["Readiness:N", "Reminders:Q"],
+                )
+            )
+            labels = (
+                alt.Chart(readiness_counts)
+                .mark_text(align="left", dx=7, fontWeight="bold", color="#34405B")
+                .encode(
+                    x="Reminders:Q",
+                    y=alt.Y("Readiness:N", sort=READINESS_ORDER),
+                    text=alt.Text("Reminders:Q", format="d"),
+                )
+            )
+            st.altair_chart(bars + labels, width="stretch")
 
     with quality_col:
         with st.container(border=True):
@@ -115,13 +170,23 @@ if page == "Overview":
                     ["Invalid date", "Unknown contact", "Invalid email"]
                 ).sum()
             )
+            invalid_email_noun = "email" if invalid_contacts == 1 else "emails"
+            unmatched_id_noun = "ID" if unknown_contacts == 1 else "IDs"
             st.badge(
-                f"{needs_attention} need review",
+                f"{needs_attention} to review",
                 icon=":material/warning:",
-                color="orange",
+                color="red" if needs_attention else "green",
             )
-            st.metric("Invalid email addresses", invalid_contacts)
-            st.metric("Unmatched contact IDs", unknown_contacts)
+            st.badge(
+                f"{invalid_contacts} invalid {invalid_email_noun}",
+                icon=":material/alternate_email:",
+                color="orange" if invalid_contacts else "green",
+            )
+            st.badge(
+                f"{unknown_contacts} unmatched {unmatched_id_noun}",
+                icon=":material/person_off:",
+                color="violet" if unknown_contacts else "green",
+            )
             st.caption("Resolve these before switching to live email delivery.")
 
     with st.container(border=True):
@@ -182,6 +247,15 @@ elif page == "Reminders":
         visible = visible[matches]
 
     st.caption(f"Showing {len(visible)} of {len(reminders_df)} reminders")
+    readiness_counts = reminders_df["readiness"].value_counts()
+    with st.container(horizontal=True):
+        for status in READINESS_ORDER:
+            count = int(readiness_counts.get(status, 0))
+            if count:
+                st.badge(
+                    f"{status} · {count}",
+                    color=READINESS_BADGE_COLORS[status],
+                )
     st.dataframe(
         visible[
             ["reminder_id", "title", "recipient", "contact_id", "template", "send_at", "repeat", "readiness"]
@@ -197,6 +271,16 @@ elif page == "Reminders":
 
 else:
     st.caption(f"{len(contacts_df)} contacts in your directory")
+    valid_contacts = int((contacts_df["email_status"] == "Valid").sum())
+    invalid_contacts = int((contacts_df["email_status"] == "Invalid").sum())
+    with st.container(horizontal=True):
+        st.badge(f"{valid_contacts} valid email addresses", color="green")
+        invalid_email_label = "email address" if invalid_contacts == 1 else "email addresses"
+        st.badge(
+            f"{invalid_contacts} invalid {invalid_email_label}",
+            icon=":material/warning:",
+            color="orange" if invalid_contacts else "green",
+        )
     st.dataframe(
         contacts_df[["contact_id", "name", "email", "department", "email_status"]],
         hide_index=True,

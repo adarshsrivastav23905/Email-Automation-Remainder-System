@@ -55,30 +55,6 @@ The project also provides a Streamlit dashboard for reviewing reminder readiness
 
 ---
 
-## 📸 Screenshots
-
-| Dashboard overview | Reminder schedule |
-|---|---|
-| ![Dashboard overview](screenshots/02_dashboard_overview.png) | ![Reminder schedule](screenshots/03_reminder_schedule.png) |
-
-| Reminder filter | Contact directory |
-|---|---|
-| ![Reminder filter](screenshots/04_reminder_filter.png) | ![Contact directory](screenshots/05_contact_directory.png) |
-
-| Safe dry-run | Full run report |
-|---|---|
-| ![Safe dry-run](screenshots/06_dry_run.png) | ![Full run report](screenshots/07_run_report.png) |
-
-| Failed-only report | Test results |
-|---|---|
-| ![Failed-only report](screenshots/08_failed_report.png) | ![Test results](screenshots/09_test_results.png) |
-
-| Project structure | README in VS Code |
-|---|---|
-| ![Project structure](screenshots/01_project_structure.png) | ![README in VS Code](screenshots/10_readme_preview.png) |
-
----
-
 ## 🏗️ System Architecture
 
 ```text
@@ -123,6 +99,49 @@ CSV data ──► Streamlit dashboard (read-only overview and dry-run preview)
 
 ---
 
+## 🗂️ Input Data Format
+
+The application reads contacts and reminders from CSV files in `data/`.
+
+### Contacts
+
+| Column | Purpose |
+|---|---|
+| `contact_id` | Unique identifier referenced by reminders |
+| `name` | Recipient name used in personalized messages |
+| `email` | Recipient email address validated before delivery |
+| `department` | Recipient department used in message personalization |
+
+### Reminders
+
+| Column | Purpose |
+|---|---|
+| `reminder_id` | Unique reminder identifier |
+| `contact_id` | Contact to receive the reminder |
+| `title` | Reminder subject context |
+| `template` | Template filename from `templates/` |
+| `send_at` | Scheduled date and time (`YYYY-MM-DD HH:MM`) |
+| `details` | Additional message content |
+| `repeat` | `none`, `daily`, or `weekly` recurrence |
+
+Required columns are checked when the CSV files are loaded. Invalid dates, unknown contacts, and invalid email addresses are reported per reminder.
+
+---
+
+## ✉️ Email Templates
+
+Templates are stored as text files in `templates/`. Each file starts with a `Subject:` line followed by the message body. The system substitutes values such as `{{name}}`, `{{title}}`, `{{details}}`, and `{{send_at}}` when rendering a message.
+
+| Template | Typical use |
+|---|---|
+| `meeting_reminder.txt` | Meeting notices |
+| `task_notification.txt` | Task and deadline alerts |
+| `payment_reminder.txt` | Payment due reminders |
+| `webinar_reminder.txt` | Webinar invitations |
+| `follow_up.txt` | Follow-up messages |
+
+---
+
 ## 💻 Software & Tools
 
 - **Language:** Python 3.10+
@@ -136,40 +155,14 @@ CSV data ──► Streamlit dashboard (read-only overview and dry-run preview)
 
 ---
 
-## 📁 Project Structure
+## 🖥️ Streamlit Dashboard
 
-```text
-Email-Automation-Reminder-System/
-├── .streamlit/
-│   └── config.toml             # Dashboard theme
-├── data/
-│   ├── contacts.csv            # Contact records
-│   └── reminders.csv           # Reminder schedule and template names
-├── docs/
-│   ├── HOW_TO_RUN_AND_GITHUB.md
-│   ├── INTERVIEW_PREP.md
-│   ├── PROJECT_GUIDE.md
-│   └── sample_log.txt
-├── outputs/
-│   └── sample_report.csv       # Example report
-├── screenshots/                # Project, dashboard, report, and test captures
-├── src/
-│   ├── config.py               # Paths and SMTP settings
-│   ├── data_loader.py          # CSV loading and validation
-│   ├── logger_setup.py         # Console and file logging
-│   ├── mailer.py               # Dry-run and SMTP sender
-│   ├── reporter.py             # CSV reports and summaries
-│   ├── scheduler.py            # Due and recurring reminders
-│   └── template_engine.py      # Template loading and rendering
-├── templates/                  # Email subject/body templates
-├── tests/
-│   └── test_core.py
-├── .env.example                # Safe SMTP configuration template
-├── .gitignore
-├── main.py                     # CLI entry point
-├── requirements.txt
-└── streamlit_app.py            # Dashboard entry point
-```
+The local dashboard provides:
+
+- **Overview:** reminder readiness, contact counts, and data-quality indicators.
+- **Reminders:** searchable schedule with readiness filters.
+- **Contacts:** directory view with email validation status.
+- **Preview:** a safe dry-run action that never sends email.
 
 ---
 
@@ -239,13 +232,6 @@ python -m streamlit run streamlit_app.py
 
 Open the local URL printed by Streamlit, typically `http://localhost:8501`.
 
-The dashboard provides:
-
-- **Overview:** counts for contacts, ready reminders, scheduled reminders, and data-quality issues.
-- **Reminders:** searchable schedule with a readiness filter.
-- **Contacts:** contact directory and email validation status.
-- **Preview ready reminders:** safe dry-run preview; this dashboard action never enables live delivery.
-
 ### Optional live email delivery
 
 Only after configuring valid SMTP credentials and confirming the recipient data:
@@ -263,10 +249,20 @@ This sends real emails. Use only consent-based addresses that you control or are
 Run the unit tests from the project root:
 
 ```bash
-python -m pytest -q
+python -m pytest -q -p no:cacheprovider
 ```
 
-Tests cover core project behavior such as CSV loading, template rendering, email validation, and reminder processing.
+| Test area | Expected behavior | Result |
+|---|---|---|
+| Template rendering | Replaces a known placeholder | PASS |
+| Missing template value | Raises a clear missing-key error | PASS |
+| Email validation | Accepts valid and rejects malformed addresses | PASS |
+| Dry-run processing | Previews a due reminder without sending email | PASS |
+| Unknown contact | Records a failure and continues processing | PASS |
+| Future reminder | Skips a reminder that is not due | PASS |
+| Weekly recurrence | Advances the next scheduled date | PASS |
+
+**Latest local result: 7 passed.**
 
 ---
 
@@ -284,6 +280,114 @@ INFO    | SUMMARY  total=8 | sent=0 | dry_run=6 | failed=2 | still scheduled=1
 ```
 
 The recurring reminder is advanced to its next occurrence, which remains scheduled. Results are saved under `outputs/`; runtime reports and logs are ignored by Git.
+
+---
+
+## 📸 Project Screenshots
+
+### 📁 Project Structure
+
+![Project structure](screenshots/01_project_structure.png)
+
+### 📊 Dashboard Overview
+
+![Dashboard overview](screenshots/02_dashboard_overview.png)
+
+### 🗓️ Reminder Schedule
+
+![Reminder schedule](screenshots/03_reminder_schedule.png)
+
+### 🔎 Reminder Filter
+
+![Reminder filter](screenshots/04_reminder_filter.png)
+
+### 👥 Contact Directory
+
+![Contact directory](screenshots/05_contact_directory.png)
+
+### 🧪 Safe Dry-run
+
+![Safe dry-run](screenshots/06_dry_run.png)
+
+### 📄 Full Run Report
+
+![Full run report](screenshots/07_run_report.png)
+
+### ⚠️ Failed-only Report
+
+![Failed-only report](screenshots/08_failed_report.png)
+
+### ✅ Test Results
+
+![Pytest results](screenshots/09_test_results.png)
+
+### 📝 README in VS Code
+
+![README in VS Code](screenshots/10_readme_preview.png)
+
+---
+
+## 📁 Project Structure
+
+```text
+Email-Automation-Reminder-System/
+├── .streamlit/
+│   └── config.toml             # Dashboard theme
+├── data/
+│   ├── contacts.csv            # Contact records
+│   └── reminders.csv           # Reminder schedule
+├── docs/
+│   ├── HOW_TO_RUN_AND_GITHUB.md
+│   ├── INTERVIEW_PREP.md
+│   ├── PROJECT_GUIDE.md
+│   └── sample_log.txt
+├── outputs/
+│   └── sample_report.csv       # Example report
+├── screenshots/                # Project and validation evidence
+├── src/
+│   ├── config.py
+│   ├── data_loader.py
+│   ├── logger_setup.py
+│   ├── mailer.py
+│   ├── reporter.py
+│   ├── scheduler.py
+│   └── template_engine.py
+├── templates/                  # Reusable email templates
+├── tests/
+│   └── test_core.py
+├── .env.example                # Safe SMTP configuration template
+├── .gitignore
+├── main.py                     # CLI entry point
+├── requirements.txt
+└── streamlit_app.py            # Dashboard entry point
+```
+
+---
+
+## 🛠️ Implementation Workflow
+
+```text
+Contact and Reminder CSV Files
+              ↓
+      Load and Validate Data
+              ↓
+    Select Due Reminders
+              ↓
+Validate Contact and Email Address
+              ↓
+     Render Email Template
+              ↓
+      ┌───────┴────────┐
+      ↓                ↓
+ Dry-run Preview   SMTP Delivery
+      └───────┬────────┘
+              ↓
+     Log and CSV Reports
+              ↓
+ Streamlit Dashboard Review
+```
+
+Recurring reminders advance to their next daily or weekly occurrence after processing. One invalid reminder is reported without stopping the rest of the batch.
 
 ---
 
@@ -352,20 +456,43 @@ Use the system only for recipients who have consented or are otherwise authorize
 
 ## 🎓 Skills Demonstrated
 
+### Python & Data Processing
+
 - Python application structure and command-line interfaces.
-- CSV processing and data validation with Pandas.
-- Email composition, SMTP, and safe dry-run design.
-- Template-based personalization.
-- Scheduling, logging, and report generation.
+- CSV processing and input validation with Pandas.
+- Date/time handling and recurring reminder scheduling.
+
+### Email Automation
+
+- Template-based message personalization.
+- Email composition, SMTP configuration, and safe dry-run design.
+- Per-reminder error handling, logging, and CSV report generation.
+
+### Dashboard & Development Tools
+
 - Streamlit dashboard development.
 - Environment-based secret configuration.
-- Unit testing and Git/GitHub workflow.
+- Unit testing with pytest and version control with Git/GitHub.
 
 ---
 
 ## 💼 Industry Relevance
 
-The project models common automation tasks across HR, sales, finance, operations, and education. It demonstrates how data ingestion, validation, templating, scheduling, delivery, and reporting can be combined into a small maintainable workflow.
+The project models reminder and notification workflows used across HR, sales, finance, operations, and education:
+
+```text
+Contact and Schedule Data
+          ↓
+  Validation and Scheduling
+          ↓
+ Message Personalization
+          ↓
+   Safe Preview / SMTP
+          ↓
+ Reports, Logs, and Dashboard
+```
+
+The modular workflow provides an educational foundation for larger notification systems. Production use would require persistent storage, access controls, consent management, unsubscribe handling, and delivery monitoring.
 
 ---
 
@@ -381,7 +508,9 @@ The project models common automation tasks across HR, sales, finance, operations
 
 ## 🔬 Project Status
 
-**Functional educational project** with a CLI, dry-run and SMTP modes, recurring scheduling, CSV reports, tests, and a Streamlit dashboard.
+### ✅ Functional Educational Project
+
+The project includes a CLI, safe dry-run and optional SMTP modes, recurring scheduling, CSV reports, seven passing unit tests, and a Streamlit dashboard.
 
 The included dataset is illustrative. Review and replace it with appropriate, consent-based data before any live sending.
 
